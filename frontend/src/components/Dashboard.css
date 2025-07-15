@@ -1,0 +1,85 @@
+.card {
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+  }
+  
+  .card:hover {
+    transform: scale(1.02);
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  /* Filters container styling */
+.filters-card {
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  background: white;
+}
+
+/* Title styling */
+.filters-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #007bff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Small screen modal button */
+.filters-modal-btn {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  .filters-card {
+    display: none;
+  }
+  .filters-modal-btn {
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+}
+/* Filters container styling */
+.filters-card {
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  background: white;
+}
+
+/* Title styling */
+.filters-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #007bff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Small screen modal button */
+.filters-modal-btn {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  .filters-card {
+    display: none;
+  }
+  .filters-modal-btn {
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+}
+
+  
