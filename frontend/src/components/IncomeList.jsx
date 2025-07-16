@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   getIncomesByEvent,
@@ -18,7 +18,6 @@ const IncomeList = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Filters state
   const [filters, setFilters] = useState({
     categoryId: '',
     amountMin: '',
@@ -28,23 +27,9 @@ const IncomeList = () => {
     searchText: '',
   });
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    loadIncomes();
-  }, [eventId]);
-
-  useEffect(() => {
-    applyFilters();
-  }, [filters, incomes]);
-
-  // Reset page when filteredIncomes changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filteredIncomes]);
-
-  const loadIncomes = async () => {
+  const loadIncomes = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -56,17 +41,15 @@ const IncomeList = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [eventId]);
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = [...incomes];
 
-    // Category filter
     if (filters.categoryId) {
       filtered = filtered.filter(inc => inc.category?.id === Number(filters.categoryId));
     }
 
-    // Amount range filter
     if (filters.amountMin) {
       filtered = filtered.filter(inc => inc.amount >= Number(filters.amountMin));
     }
@@ -74,7 +57,6 @@ const IncomeList = () => {
       filtered = filtered.filter(inc => inc.amount <= Number(filters.amountMax));
     }
 
-    // Date range filter
     if (filters.dateFrom) {
       filtered = filtered.filter(inc => inc.date >= filters.dateFrom);
     }
@@ -82,17 +64,27 @@ const IncomeList = () => {
       filtered = filtered.filter(inc => inc.date <= filters.dateTo);
     }
 
-   // Search text filter (sourceName + description)
-if (filters.searchText.trim()) {
-  const text = filters.searchText.toLowerCase();
-  filtered = filtered.filter(inc =>
-    (inc.sourceName?.toLowerCase().includes(text) || inc.description?.toLowerCase().includes(text))
-  );
-}
-
+    if (filters.searchText.trim()) {
+      const text = filters.searchText.toLowerCase();
+      filtered = filtered.filter(inc =>
+        (inc.sourceName?.toLowerCase().includes(text) || inc.description?.toLowerCase().includes(text))
+      );
+    }
 
     setFilteredIncomes(filtered);
-  };
+  }, [incomes, filters]);
+
+  useEffect(() => {
+    loadIncomes();
+  }, [loadIncomes]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [loadIncomes,applyFilters]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredIncomes]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -141,7 +133,7 @@ if (filters.searchText.trim()) {
     setLoading(true);
     try {
       await deleteIncome(id);
-      if (editingIncome && editingIncome.id === id) {
+      if (editingIncome?.id === id) {
         setEditingIncome(null);
       }
       await loadIncomes();
@@ -152,7 +144,6 @@ if (filters.searchText.trim()) {
     }
   };
 
-  // Pagination helpers
   const pageCount = Math.ceil(filteredIncomes.length / ITEMS_PER_PAGE);
   const paginatedIncomes = filteredIncomes.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -164,7 +155,6 @@ if (filters.searchText.trim()) {
     setCurrentPage(newPage);
   };
 
-  // Categories for filter dropdown (extract unique categories from incomes)
   const uniqueCategories = [...new Map(incomes.map(i => [i.category?.id, i.category])).values()].filter(Boolean);
 
   return (
@@ -228,7 +218,6 @@ if (filters.searchText.trim()) {
               name="dateFrom"
               value={filters.dateFrom}
               onChange={handleFilterChange}
-              placeholder="From Date"
             />
           </div>
 
@@ -239,7 +228,6 @@ if (filters.searchText.trim()) {
               name="dateTo"
               value={filters.dateTo}
               onChange={handleFilterChange}
-              placeholder="To Date"
             />
           </div>
 
@@ -247,7 +235,7 @@ if (filters.searchText.trim()) {
             <input
               type="text"
               className="form-control"
-              placeholder="Search source or notes"
+              placeholder="Search source or description"
               name="searchText"
               value={filters.searchText}
               onChange={handleFilterChange}
@@ -262,11 +250,9 @@ if (filters.searchText.trim()) {
         </div>
       </div>
 
-      {/* Loading & error */}
       {loading && <div className="alert alert-info">Loading...</div>}
       {error && <div className="alert alert-danger">{error}</div>}
 
-      {/* Incomes Table */}
       <div className="card shadow-sm">
         <div className="card-header bg-dark text-white fw-semibold">
           💼 All Incomes ({filteredIncomes.length})
@@ -279,7 +265,7 @@ if (filters.searchText.trim()) {
                 <th>Category</th>
                 <th>Amount</th>
                 <th>Date</th>
-                <th>Descriptions</th>
+                <th>Description</th>
                 <th className="text-end">Actions</th>
               </tr>
             </thead>
@@ -314,38 +300,26 @@ if (filters.searchText.trim()) {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="text-center text-muted">
-                    No income records found.
-                  </td>
+                  <td colSpan="6" className="text-center text-muted">No income records found.</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
 
-        {/* Pagination Controls */}
         {pageCount > 1 && (
           <nav className="my-3 d-flex justify-content-center">
             <ul className="pagination mb-0">
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => changePage(currentPage - 1)}>
-                  Previous
-                </button>
+                <button className="page-link" onClick={() => changePage(currentPage - 1)}>Previous</button>
               </li>
               {[...Array(pageCount)].map((_, i) => (
-                <li
-                  key={i}
-                  className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
-                >
-                  <button className="page-link" onClick={() => changePage(i + 1)}>
-                    {i + 1}
-                  </button>
+                <li key={i} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                  <button className="page-link" onClick={() => changePage(i + 1)}>{i + 1}</button>
                 </li>
               ))}
               <li className={`page-item ${currentPage === pageCount ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => changePage(currentPage + 1)}>
-                  Next
-                </button>
+                <button className="page-link" onClick={() => changePage(currentPage + 1)}>Next</button>
               </li>
             </ul>
           </nav>

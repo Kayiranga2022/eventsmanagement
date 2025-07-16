@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   getExpensesByEvent,
@@ -27,24 +27,12 @@ const ExpenseList = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    loadExpenses();
-  }, [eventId]);
-
-  useEffect(() => {
-    applyFilters();
-  }, [filters, expenses]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filteredExpenses]);
-
-  const loadExpenses = async () => {
+  const loadExpenses = useCallback(async () => {
     const res = await getExpensesByEvent(eventId);
     setExpenses(res.data);
-  };
+  }, [eventId]);
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = [...expenses];
 
     if (filters.categoryId) {
@@ -70,7 +58,19 @@ const ExpenseList = () => {
     }
 
     setFilteredExpenses(filtered);
-  };
+  }, [expenses, filters]);
+
+  useEffect(() => {
+    loadExpenses();
+  }, [loadExpenses]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [loadExpenses,applyFilters]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredExpenses]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
