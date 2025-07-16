@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { getEvents } from '../services/EventService';
 import { getIncomesByEvent } from '../services/IncomeService';
 import { getExpensesByEvent } from '../services/ExpenseService';
-//import { getIncomeCategories } from '../services/incomeCategoryService';
-//import { getExpenseCategories } from '../services/ExpenseCategoryService';
+import { getIncomeCategories } from '../services/incomeCategoryService';
+import { getExpenseCategories } from '../services/ExpenseCategoryService';
 import * as XLSX from 'xlsx';
 import Dashboard from '../components/Dashboard';
 
