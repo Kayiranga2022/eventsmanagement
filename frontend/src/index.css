@@ -11,3 +11,33 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/*
+ * Targeted fix for button styling issues (invisibility, large size/misplacement)
+ * This overrides problematic properties identified in the browser's "Styles" tab.
+ */
+button,
+.btn {
+  opacity: 1 !important; /* Forces buttons to be visible */
+  transform: none !important; /* Removes any unwanted translation/position shift */
+  transition: none !important; /* Disables any unwanted animations/transitions */
+  flex-grow: 0 !important; /* Overrides aggressive flex-grow to restore Bootstrap's sizing */
+  width: auto !important; /* Ensures width is determined by content/Bootstrap, not forced wide */
+}
+
+/* Specific fix for dropdown items if they are also affected */
+.dropdown-item {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    flex-grow: 0 !important; /* Ensure dropdown items don't grow aggressively */
+    width: 100% !important; /* Typically, dropdown items should take full width of their parent */
+}
+
+/* Ensure Font Awesome icons within buttons are also visible and correctly positioned */
+.btn .fas,
+.btn .far,
+.btn .fab {
+    opacity: 1 !important;
+    transform: none !important;
+}

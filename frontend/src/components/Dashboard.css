@@ -1,85 +1,98 @@
+/* src/components/Dashboard.css */
+
+/* General card styling (consistent with DashboardPage) */
 .card {
-    border-radius: 12px;
-    transition: transform 0.2s ease;
-  }
-  
-  .card:hover {
-    transform: scale(1.02);
-  }
-  
-  .card-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-  }
-  /* Filters container styling */
-.filters-card {
-  margin-bottom: 1.5rem;
-  box-shadow: 0 0 8px rgba(0,0,0,0.1);
-  border-radius: 8px;
-  padding: 1rem 1.5rem;
-  background: white;
+  border-radius: 12px;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Add shadow transition */
+  border: none; /* Remove default Bootstrap card border */
+  background-color: white; /* Ensure card background is white */
+  color: black; /* Ensure card text is black */
 }
 
-/* Title styling */
+.card:hover {
+  transform: translateY(-5px); /* Lift slightly on hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* More pronounced shadow on hover */
+}
+
+.card-title {
+  font-size: 1.35rem; /* Slightly larger for prominence */
+  font-weight: 700; /* Bolder */
+  color: #212529; /* Darker, almost black text */
+  margin-bottom: 0.75rem; /* Better spacing */
+}
+
+/* Filters container styling (from DashboardPage, but good to keep consistent if used elsewhere) */
+/* Note: The filters-card is primarily handled in DashboardPage.jsx now */
+/* Keeping these for reference but they might not apply directly to Dashboard.jsx content */
+.filters-card {
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); /* Softer shadow */
+  border-radius: 12px; /* Consistent rounded corners */
+  padding: 1.5rem; /* More padding */
+  background: white;
+  border: none; /* Ensure no border */
+}
+
 .filters-title {
   font-weight: 600;
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  color: #007bff;
+  font-size: 1.2rem;
+  color: #212529; /* Dark neutral color */
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+  padding-bottom: 1rem; /* Add padding below title */
+  border-bottom: 1px solid #dee2e6; /* Subtle divider - keep a very light gray */
+  margin-bottom: 1rem; /* Space below divider */
 }
 
-/* Small screen modal button */
+/* Hide filters-modal-btn by default on desktop, show on mobile */
 .filters-modal-btn {
   display: none;
 }
 
 @media (max-width: 767.98px) {
   .filters-card {
-    display: none;
+    display: none; /* Hide desktop filter card on mobile */
   }
   .filters-modal-btn {
-    display: inline-block;
-    margin-bottom: 1rem;
+    display: inline-block; /* Show mobile filter button */
+    margin-bottom: 1.5rem; /* Consistent spacing */
   }
 }
-/* Filters container styling */
-.filters-card {
-  margin-bottom: 1.5rem;
-  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+
+/* Chart specific styling (optional, Recharts usually handles its own styling well) */
+.recharts-wrapper {
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* Use a modern sans-serif font */
+}
+
+/* Custom tooltip for Recharts */
+.custom-tooltip {
+  background-color: rgba(255, 255, 255, 0.95); /* White with slight transparency */
+  border: 1px solid #dee2e6; /* Very light gray border */
   border-radius: 8px;
-  padding: 1rem 1.5rem;
-  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #212529; /* Dark text */
 }
 
-/* Title styling */
-.filters-title {
-  font-weight: 600;
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  color: #007bff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
+/* Tooltip items (if needed, but style={{ color: entry.color }} in JSX usually handles it) */
+.custom-tooltip p {
+  color: #212529; /* Ensure text is dark */
 }
 
-/* Small screen modal button */
-.filters-modal-btn {
-  display: none;
+.custom-tooltip .label {
+  color: #212529; /* Ensure label is dark */
 }
 
-@media (max-width: 767.98px) {
-  .filters-card {
-    display: none;
-  }
-  .filters-modal-btn {
-    display: inline-block;
-    margin-bottom: 1rem;
-  }
+/* Recharts tooltip wrapper - ensure consistency if not using custom-tooltip */
+.recharts-tooltip-wrapper {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid #dee2e6 !important; /* Changed to a very light gray border */
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  color: #212529 !important; /* Dark text */
 }
 
-  
+.recharts-tooltip-wrapper .recharts-tooltip-item {
+  color: #212529 !important; /* Dark text for tooltip items */
+}

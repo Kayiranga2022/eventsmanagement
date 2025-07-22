@@ -5,7 +5,14 @@ import {
   deleteExpenseCategory,
   updateExpenseCategory,
 } from '../services/ExpenseCategoryService';
-import CategoryForm from '../components/CategoryForm';
+import CategoryForm from '../components/CategoryForm'; // Assuming CategoryForm is also updated for consistency
+
+// --- IMPORTANT: Ensure Font Awesome is installed and imported globally ---
+// If you haven't already:
+// 1. Install: npm install --save @fortawesome/fontawesome-free
+// 2. Import in your src/index.js (or global CSS file):
+//    import '@fortawesome/fontawesome-free/css/all.min.css';
+// --------------------------------------------------------------------------
 
 const ExpenseCategoriesPage = () => {
   const [categories, setCategories] = useState([]);
@@ -21,7 +28,8 @@ const ExpenseCategoriesPage = () => {
       const res = await getExpenseCategories();
       setCategories(res.data);
     } catch (error) {
-      console.error('Failed to load expense categories', error);
+      console.error('Failed to load expense categories:', error);
+      // You might want to set an error state here to display to the user
     }
   };
 
@@ -30,17 +38,19 @@ const ExpenseCategoriesPage = () => {
       await createExpenseCategory(categoryData);
       loadCategories();
     } catch (error) {
-      console.error('Failed to add category', error);
+      console.error('Failed to add category:', error);
+      // Handle error display
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Delete this category?')) {
+    if (window.confirm('Are you sure you want to delete this expense category? This action cannot be undone.')) {
       try {
         await deleteExpenseCategory(id);
         loadCategories();
       } catch (error) {
-        console.error('Failed to delete category', error);
+        console.error('Failed to delete category:', error);
+        // Handle error display
       }
     }
   };
@@ -56,86 +66,111 @@ const ExpenseCategoriesPage = () => {
   };
 
   const saveEdit = async () => {
+    if (!editName.trim()) { // Basic validation
+      alert('Category name cannot be empty.');
+      return;
+    }
     try {
       await updateExpenseCategory(editingId, { name: editName });
       cancelEditing();
       loadCategories();
     } catch (error) {
-      console.error('Failed to update category', error);
+      console.error('Failed to update category:', error);
+      // Handle error display
     }
   };
 
   return (
-    <div className="container py-2">
-      <div className="mx-auto" style={{ maxWidth: '640px' }}>
-        <h4 className="mb-3 text-danger fw-bold text-center">📉 Expense Categories</h4>
+    <div className="container py-4"> {/* Increased padding for better spacing */}
+      <div className="mx-auto" style={{ maxWidth: '720px' }}> {/* Slightly increased max-width for better form/table balance */}
+        <h3 className="mb-4 text-dark fw-bold text-center"> {/* Consistent heading style */}
+          <i className="fas fa-tags me-2 text-info"></i> Manage Expense Categories
+        </h3> {/* New icon and updated title */}
 
-        <div className="mb-3">
-          <CategoryForm onSubmit={handleAddCategory} label="➕ Add New Expense Category" />
+        <div className="mb-4"> {/* Increased margin-bottom for spacing */}
+          {/* CategoryForm will also need styling updates for consistency */}
+          <CategoryForm onSubmit={handleAddCategory} label="Add New Expense Category" />
         </div>
 
-        <div className="card shadow-sm">
-          <div className="card-header bg-danger text-white fw-semibold">
-            Category List
+        <div className="card shadow-sm border-0 rounded-3"> {/* Consistent card styling */}
+          <div className="card-header bg-info text-white py-3 border-0 rounded-top-3"> {/* Use Bootstrap 'info' for categories, rounded top corners */}
+            <h5 className="mb-0 fw-semibold">
+              <i className="fas fa-list-alt me-2"></i> Expense Category List
+            </h5> {/* Professional icon and clearer title */}
           </div>
           <div className="table-responsive">
-            <table className="table table-sm table-hover table-striped m-0">
-              <thead className="table-light">
+            <table className="table table-hover align-middle mb-0"> {/* table-hover, align-middle */}
+              <thead className="table-light"> {/* Light background for table header */}
                 <tr>
-                  <th>Name</th>
-                  <th style={{ width: '150px' }} className="text-end">Actions</th>
+                  <th scope="col">Category Name</th> {/* Clearer column header */}
+                  <th scope="col" style={{ width: '180px' }} className="text-end">Actions</th> {/* Adjusted width for buttons */}
                 </tr>
               </thead>
               <tbody>
-                {categories.map((cat) => (
-                  <tr key={cat.id}>
-                    <td>
-                      {editingId === cat.id ? (
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={editName}
-                          onChange={(e) => setEditName(e.target.value)}
-                        />
-                      ) : (
-                        cat.name
-                      )}
-                    </td>
-                    <td className="text-end">
-                      {editingId === cat.id ? (
-                        <>
-                          <button className="btn btn-sm btn-success me-1" onClick={saveEdit}>
-                            💾
-                          </button>
-                          <button className="btn btn-sm btn-secondary" onClick={cancelEditing}>
-                            ❌
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            className="btn btn-sm btn-warning me-1"
-                            onClick={() => startEditing(cat)}
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => handleDelete(cat.id)}
-                          >
-                            🗑️
-                          </button>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-                {categories.length === 0 && (
+                {categories.length === 0 ? (
                   <tr>
-                    <td colSpan="2" className="text-center text-muted py-3">
-                      No categories found.
+                    <td colSpan="2" className="text-center text-muted py-4">
+                      <i className="fas fa-box-open me-2"></i> No expense categories found.
                     </td>
                   </tr>
+                ) : (
+                  categories.map((cat) => (
+                    <tr key={cat.id}>
+                      <td>
+                        {editingId === cat.id ? (
+                          <input
+                            type="text"
+                            className="form-control form-control-sm" // Smaller control for inline editing
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            onKeyPress={(e) => { // Allow saving with Enter key
+                              if (e.key === 'Enter') saveEdit();
+                            }}
+                            autoFocus // Focus on the input when editing starts
+                          />
+                        ) : (
+                          <span className="fw-medium">{cat.name}</span> // Slightly bold category name
+                        )}
+                      </td>
+                      <td className="text-end">
+                        {editingId === cat.id ? (
+                          <div className="d-flex justify-content-end gap-2"> {/* Align buttons and add gap */}
+                            <button
+                              className="btn btn-sm btn-success rounded-pill px-3" // Success color for save
+                              onClick={saveEdit}
+                              title="Save Changes"
+                            >
+                              <i className="fas fa-save me-1"></i> Save
+                            </button>
+                            <button
+                              className="btn btn-sm btn-outline-secondary rounded-pill px-3" // Outline secondary for cancel
+                              onClick={cancelEditing}
+                              title="Cancel Editing"
+                            >
+                              <i className="fas fa-times me-1"></i> Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="d-flex justify-content-end gap-2"> {/* Align buttons and add gap */}
+                            <button
+                              className="btn btn-sm btn-outline-primary rounded-pill" // Outline primary for edit
+                              onClick={() => startEditing(cat)}
+                              title="Edit Category"
+                            >
+                              <i className="fas fa-pencil-alt"></i>
+                            </button>
+                            <button
+                              className="btn btn-sm btn-outline-danger rounded-pill" // Outline danger for delete
+                              onClick={() => handleDelete(cat.id)}
+                              title="Delete Category"
+                            >
+                              <i className="fas fa-trash-alt"></i>
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
